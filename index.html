@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>食光守護者｜2025 專題競賽作品</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; }
+
+        /* 動畫特效 */
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up { animation: fade-in-up 0.8s ease-out forwards; }
+        
+        @keyframes scan-line {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+        .scan-line-animation {
+            position: absolute; left: 0; width: 100%; height: 2px;
+            background-color: #38bdf8; box-shadow: 0 0 4px #38bdf8;
+            animation: scan-line 2s linear infinite;
+        }
+        
+        .tab-content.hidden { display: none; }
+        
+        .nav-link {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .nav-link:hover { color: #0ea5e9; }
+        .nav-link.active {
+            color: #0284c7;
+            border-bottom: 2px solid #0284c7;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('landing')">
+                    <div class="bg-sky-500 text-white w-8 h-8 flex items-center justify-center rounded-lg font-bold">食</div>
+                    <span class="text-xl font-bold text-slate-800 hidden sm:block">食光守護者</span>
+                </div>
+
+                <div class="hidden md:flex space-x-1 overflow-x-auto no-scrollbar">
+                    <a onclick="switchTab('landing')" id="nav-landing" class="nav-link active">專題首頁</a>
+                    <a onclick="switchTab('inventory')" id="nav-inventory" class="nav-link">食材管理</a>
+                    <a onclick="switchTab('recipes')" id="nav-recipes" class="nav-link">食譜匹配</a>
+                    <a onclick="switchTab('analytics')" id="nav-analytics" class="nav-link">數據分析</a>
+                    <a onclick="switchTab('storybook')" id="nav-storybook" class="nav-link">繪本故事</a>
+                    <a onclick="switchTab('interactive')" id="nav-interactive" class="nav-link">互動專區</a>
+                </div>
+                
+                <div class="flex items-center gap-2 text-sm ml-4">
+                     <button id="login-btn" class="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 shadow-sm transition">
+                        <span>登入系統</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="md:hidden flex overflow-x-auto px-4 pb-2 space-x-4 text-sm whitespace-nowrap border-t bg-white no-scrollbar">
+            <a onclick="switchTab('landing')" class="py-2 text-gray-600 font-bold">首頁</a>
+            <a onclick="switchTab('inventory')" class="py-2 text-gray-600">庫存</a>
+            <a onclick="switchTab('recipes')" class="py-2 text-gray-600">食譜</a>
+            <a onclick="switchTab('analytics')" class="py-2 text-gray-600">數據</a>
+            <a onclick="switchTab('storybook')" class="py-2 text-gray-600">故事</a>
+            <a onclick="switchTab('interactive')" class="py-2 text-gray-600">互動</a>
+        </div>
+    </nav>
+
+    <div class="flex-grow w-full">
+        
+        <div id="landing-tab-content" class="tab-content w-full bg-sky-50 min-h-[calc(100vh-64px)] flex items-center justify-center">
+            <div class="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6 animate-fade-up">
+                    <div class="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-sm border border-blue-200">
+                        🏆 2025 全國專題競賽作品
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-bold text-slate-800 leading-tight">
+                        基於深度學習之<br><span class="text-sky-500">智慧食材管理系統</span>
+                    </h1>
+                    <p class="text-lg text-slate-500 font-medium">Research Title: AI-Powered Smart Food Guardian</p>
+                    <p class="text-slate-600 leading-relaxed text-justify">
+                        本研究旨在解決家庭食物浪費問題。整合 <span class="font-bold text-sky-600">MobileNet 影像辨識</span> 與 <span class="font-bold text-amber-500">Firebase 雲端資料庫</span>，建構一套從「自動入庫」到「即期預警」的完整 AIoT 解決方案。
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="switchTab('inventory')" class="px-8 py-3 bg-sky-500 text-white rounded-full font-bold shadow-lg hover:bg-sky-600 hover:shadow-xl transform transition hover:-translate-y-1">查看系統實作</button>
+                        <button onclick="switchTab('analytics')" class="px-8 py-3 bg-white border-2 border-sky-200 text-sky-600 rounded-full font-bold hover:border-sky-400 hover:text-sky-700 transition shadow-sm">📈 數據分析成果</button>
+                    </div>
+                </div>
+                <div class="relative animate-fade-up" style="animation-delay: 0.2s;">
+                    <div class="absolute -inset-4 bg-sky-200/50 rounded-[3rem] transform rotate-3 z-0"></div>
+                    <div class="relative z-10 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
+                        <img src="https://images.unsplash.com/photo-1556910103-1c02745a30bf?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover transform hover:scale-105 transition duration-700" alt="Kitchen">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-slate-900/80 to-transparent p-6 text-white">
+                            <p class="font-mono text-sm text-sky-200">System Status: Online</p>
+                            <p class="font-mono text-xs opacity-75">AI Detection Active</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+            <div id="inventory-tab-content" class="tab-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg border border-slate-100 h-min sticky top-20">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="bg-gray-100 p-1 rounded">📷</div>
+                            <h2 class="text-xl font-bold text-gray-800">新增食材</h2>
+                        </div>
+                        
+                        <div class="relative w-full aspect-video bg-[#0f172a] rounded-lg shadow-inner overflow-hidden flex items-center justify-center mb-4">
+                            <video id="camera-stream" class="w-full h-full object-cover" autoplay playsinline style="display:none;"></video>
+                            <div id="camera-overlay" class="absolute inset-0 flex flex-col items-center justify-center text-slate-500">
+                                <svg class="w-12 h-12 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <p class="text-sm font-medium">相機已關閉</p>
+                            </div>
+                            <div id="ai-scan-effect" class="absolute inset-0 hidden pointer-events-none z-20">
+                                <div class="scan-line-animation"></div>
+                                <div class="absolute top-2 left-2 bg-sky-500/80 text-white text-xs px-2 py-1 rounded animate-pulse">AI 識別中...</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <button type="button" id="start-camera-btn" class="bg-[#0ea5e9] text-white py-2.5 rounded-lg hover:bg-[#0284c7] font-bold shadow-sm transition active:scale-95">
+                                開啟鏡頭
+                            </button>
+                            <button type="button" id="stop-camera-btn" class="bg-[#f43f5e] text-white py-2.5 rounded-lg hover:bg-[#e11d48] font-bold shadow-sm transition active:scale-95" disabled>
+                                關閉
+                            </button>
+                        </div>
+                        <button type="button" id="rescan-btn" class="w-full mb-4 bg-[#f59e0b] text-white py-2.5 rounded-lg hover:bg-[#d97706] font-bold shadow-sm transition flex items-center justify-center gap-2 active:scale-95" disabled>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            重新掃描
+                        </button>
+
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 mb-4">
+                            <p class="text-slate-500 text-xs mb-2">或者手動輸入代碼 (101-700)：<br>若相機無法使用，可在此輸入測試。</p>
+                            <div class="flex gap-2">
+                                <input type="number" id="scan-input" placeholder="ID (如: 102)" class="flex-1 border border-slate-300 rounded px-3 py-1.5 text-sm focus:ring-2 focus:ring-sky-200 outline-none">
+                                <button type="button" id="manual-scan-btn" class="bg-white border border-slate-300 text-slate-600 px-3 py-1.5 rounded text-sm font-bold hover:bg-slate-50">查詢</button>
+                            </div>
+                        </div>
+
+                        <form id="add-ingredient-form" class="space-y-3 pt-2 border-t border-slate-100">
+                            <div>
+                                <label class="text-sm font-bold text-gray-700">食材名稱</label>
+                                <input type="text" id="name" required placeholder="等待識別..." class="w-full mt-1 border border-slate-300 rounded-lg p-2.5 bg-white focus:border-sky-500 focus:ring-sky-500 outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-sm font-bold text-gray-700">種類</label>
+                                    <select id="type" class="w-full mt-1 border border-slate-300 rounded-lg p-2.5 bg-white outline-none">
+                                        <option value="蔬菜">蔬菜</option>
+                                        <option value="肉類">肉類</option>
+                                        <option value="海鮮">海鮮</option> <option value="水果">水果</option> <option value="奶製品">奶製品</option>
+                                        <option value="主食">主食</option> <option value="飲料">飲料</option> <option value="調味料">調味料</option> <option value="其他">其他</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-sm font-bold text-[#d97706]">📅 有效期限</label>
+                                    <input type="date" id="expiryDate" required class="w-full mt-1 border border-[#fcd34d] rounded-lg p-2.5 bg-[#fffbeb] text-gray-700 outline-none">
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full mt-2 bg-[#0ea5e9] text-white py-3 rounded-lg font-bold shadow-md hover:bg-[#0284c7] transform transition active:scale-95 flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                確認入庫
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border-t-4 border-[#0ea5e9]">
+                        <div class="flex justify-between items-center mb-4 border-b pb-3">
+                            <h2 class="text-xl font-bold text-gray-800">📦 冰箱庫存清單</h2>
+                            <button id="delete-expired-btn" class="text-sm bg-rose-50 text-rose-600 px-3 py-1.5 rounded-lg hover:bg-rose-100 font-bold transition border border-rose-100 flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                清除所有過期
+                            </button>
+                        </div>
+                        <div id="ingredient-list" class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                            <p class="text-center text-gray-400 py-10">讀取中...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="recipes-tab-content" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-[#f43f5e]"> 
+                    <div class="flex items-center gap-2 mb-2">
+                        <svg class="w-6 h-6 text-[#f43f5e]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        <h2 class="text-xl font-bold text-gray-800">智能食譜匹配</h2>
+                    </div>
+                    <div class="bg-[#fff1f2] border border-[#fecdd3] p-4 rounded-lg mb-6 text-[#be123c] text-sm font-medium">
+                        系統會根據您目前的「庫存食材」來推薦料理。缺少的食材會自動標示。
+                    </div>
+                    <button id="match-recipe-btn" class="mb-8 bg-[#f43f5e] text-white px-8 py-2.5 rounded-lg font-bold hover:bg-[#e11d48] shadow-md transition flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        尋找可製作料理
+                    </button>
+                    <div id="recipe-results" class="grid md:grid-cols-2 gap-6">
+                        <div class="col-span-2 text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                            <p class="text-gray-500">點擊上方按鈕，AI 將為您分析最佳食譜！</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="analytics-tab-content" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-500">
+                        <p class="text-sm text-gray-500 font-bold">總庫存量</p>
+                        <h3 id="stat-total-items" class="text-3xl font-bold text-blue-700 mt-1">0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-amber-500">
+                        <p class="text-sm text-gray-500 font-bold">即將過期</p>
+                        <h3 id="stat-warning-items" class="text-3xl font-bold text-amber-600 mt-1">0</h3>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500">
+                        <p class="text-sm text-gray-500 font-bold">預估價值</p>
+                        <h3 id="stat-total-value" class="text-3xl font-bold text-green-700 mt-1">$0</h3>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow border">
+                        <h3 class="font-bold mb-4">新鮮度分佈</h3>
+                        <div class="h-64"><canvas id="expirationChart"></canvas></div>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow border">
+                        <h3 class="font-bold mb-4">種類統計</h3>
+                        <div class="h-64"><canvas id="categoryChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="storybook-tab-content" class="tab-content hidden">
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-100">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-6 text-center">📖 食光故事屋</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="story-card bg-orange-50 rounded-2xl p-6 shadow-md cursor-pointer" onclick="openStory('carrot')">
+                            <div class="text-6xl text-center mb-4">🥕</div>
+                            <h3 class="text-xl font-bold text-orange-800 text-center">小紅蘿蔔的漂流</h3>
+                            <button class="w-full mt-4 py-2 bg-orange-400 text-white rounded-lg font-bold">閱讀故事</button>
+                        </div>
+                        <div class="story-card bg-sky-50 rounded-2xl p-6 shadow-md cursor-pointer" onclick="openStory('robot')">
+                            <div class="text-6xl text-center mb-4">🤖</div>
+                            <h3 class="text-xl font-bold text-sky-800 text-center">阿冷守護神</h3>
+                            <button class="w-full mt-4 py-2 bg-sky-400 text-white rounded-lg font-bold">閱讀故事</button>
+                        </div>
+                        <div class="story-card bg-green-50 rounded-2xl p-6 shadow-md cursor-pointer" onclick="openStory('earth')">
+                            <div class="text-6xl text-center mb-4">🌏</div>
+                            <h3 class="text-xl font-bold text-green-800 text-center">地球媽媽的眼淚</h3>
+                            <button class="w-full mt-4 py-2 bg-green-500 text-white rounded-lg font-bold">閱讀故事</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="interactive-tab-content" class="tab-content hidden">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-blue-100">
+                        <h3 class="text-xl font-bold text-blue-800 mb-2">🍳 今天吃什麼？</h3>
+                        <div id="dishDisplay" class="w-full text-center bg-blue-50 py-12 rounded-xl my-4 text-xl text-gray-400 border border-blue-100">點擊按鈕開始...</div>
+                        <button id="btnSpinDish" class="w-full py-3 bg-[#3b82f6] text-white rounded-full font-bold hover:bg-blue-600 shadow-lg transition transform active:scale-95">開始轉盤</button>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-teal-100">
+                        <h3 class="text-xl font-bold text-teal-800 mb-2">🧮 浪費計算機</h3>
+                        <div class="space-y-4">
+                            <input id="wasteItems" type="number" placeholder="每週丟棄樣數 (ex: 3)" class="w-full border p-2 rounded">
+                            <input id="wastePrice" type="number" placeholder="平均單價 (ex: 50)" class="w-full border p-2 rounded">
+                            <button id="btnCalculateWaste" class="w-full py-3 bg-teal-600 text-white rounded-lg font-bold">計算損失</button>
+                            <div id="wasteResult" class="hidden p-4 bg-red-50 text-red-800 rounded text-center font-bold"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="story-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[80vh]">
+            <div id="story-header" class="p-6 bg-orange-100 flex justify-between items-center rounded-t-2xl">
+                <h3 id="story-title" class="text-xl font-bold">故事</h3>
+                <button onclick="closeStory()" class="text-2xl font-bold text-gray-500">✕</button>
+            </div>
+            <div id="story-body" class="p-8 overflow-y-auto text-lg leading-loose whitespace-pre-line"></div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`${tabName}-tab-content`).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if(activeNav) activeNav.classList.add('active');
+            if(tabName === 'analytics') setTimeout(updateChartGlobal, 100);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderUI(); 
+            
+            const video = document.getElementById('camera-stream');
+            const startBtn = document.getElementById('start-camera-btn');
+            const stopBtn = document.getElementById('stop-camera-btn');
+            const rescanBtn = document.getElementById('rescan-btn');
+            const form = document.getElementById('add-ingredient-form');
+            let stream = null;
+
+            // ==========================================
+            // 🔥 共用函式：自動掃描與入庫 🔥
+            // ==========================================
+            function triggerAutoScan() {
+                document.getElementById('ai-scan-effect').classList.remove('hidden');
+                rescanBtn.disabled = true;
+
+                setTimeout(() => {
+                    // 🔥 更新：模擬 AI 識別 (加入新種類)
+                    const foods = [
+                        {n: '花椰菜', t: '蔬菜', days: 5},
+                        {n: '美國牛排', t: '肉類', days: 3},
+                        {n: '全脂牛奶', t: '奶製品', days: 7},
+                        {n: '鮭魚片', t: '海鮮', days: 2}, // New
+                        {n: '富士蘋果', t: '水果', days: 10}, // New
+                        {n: '白米', t: '主食', days: 180}, // New
+                        {n: '柳橙汁', t: '飲料', days: 14}, // New
+                        {n: '醬油', t: '調味料', days: 365} // New
+                    ];
+                    const r = foods[Math.floor(Math.random() * foods.length)];
+                    
+                    const expiryDate = new Date();
+                    expiryDate.setDate(expiryDate.getDate() + r.days);
+                    const dateStr = expiryDate.toISOString().split('T')[0];
+
+                    document.getElementById('name').value = r.n;
+                    document.getElementById('type').value = r.t;
+                    document.getElementById('expiryDate').value = dateStr;
+                    
+                    const newItem = {
+                        id: Date.now().toString(),
+                        name: r.n,
+                        type: r.t,
+                        expiry: dateStr
+                    };
+                    ingredients.push(newItem);
+                    renderUI();
+
+                    document.getElementById('ai-scan-effect').classList.add('hidden');
+                    rescanBtn.disabled = false;
+                    
+                    const alertBox = document.createElement('div');
+                    alertBox.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-full shadow-xl z-[9999] flex items-center gap-2 animate-fade-up';
+                    alertBox.innerHTML = `<span>✅ 識別成功！已加入：<b>${r.n}</b> (${r.t})</span>`;
+                    document.body.appendChild(alertBox);
+                    setTimeout(() => alertBox.remove(), 3000);
+
+                }, 2000);
+            }
+
+            // 按鈕事件
+            startBtn.addEventListener('click', async () => {
+                try {
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                    } catch {
+                        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    }
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    document.getElementById('camera-overlay').classList.add('hidden');
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    triggerAutoScan();
+                } catch (e) {
+                    alert("⚠️ 無法開啟相機，請確認瀏覽器權限或使用 localhost/HTTPS");
+                }
+            });
+
+            stopBtn.addEventListener('click', () => {
+                if(stream) stream.getTracks().forEach(t => t.stop());
+                video.style.display = 'none';
+                document.getElementById('camera-overlay').classList.remove('hidden');
+                document.getElementById('ai-scan-effect').classList.add('hidden');
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                rescanBtn.disabled = true;
+            });
+            
+            rescanBtn.addEventListener('click', () => {
+                document.getElementById('name').value = '';
+                document.getElementById('type').value = '蔬菜';
+                document.getElementById('expiryDate').value = '';
+                triggerAutoScan();
+            });
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newItem = {
+                    id: Date.now().toString(),
+                    name: document.getElementById('name').value,
+                    type: document.getElementById('type').value,
+                    expiry: document.getElementById('expiryDate').value
+                };
+                ingredients.push(newItem);
+                renderUI(); 
+                form.reset();
+                alert('✅ 食材已手動入庫！'); 
+            });
+
+            document.getElementById('match-recipe-btn').addEventListener('click', () => {
+                const container = document.getElementById('recipe-results');
+                const recipes = [
+                    { name: "鮮蔬炒肉片", match: 90, icon: "🥦", has: ["肉類", "蔬菜"], lack: ["蒜頭"] },
+                    { name: "家常燉菜", match: 75, icon: "🍲", has: ["蔬菜"], lack: ["高湯", "馬鈴薯"] },
+                    { name: "番茄炒蛋", match: 85, icon: "🍅", has: ["雞蛋"], lack: ["番茄", "蔥"] },
+                    { name: "凱薩沙拉", match: 60, icon: "🥗", has: ["蔬菜"], lack: ["麵包丁", "沙拉醬", "雞胸肉"] }
+                ];
+                let html = "";
+                recipes.forEach(r => {
+                    let matchColor = r.match >= 80 ? "text-green-600" : (r.match >= 60 ? "text-amber-600" : "text-gray-500");
+                    html += `
+                    <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">${r.icon}</div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-gray-800">${r.name}</h4>
+                                    <p class="text-sm font-medium ${matchColor}">匹配度: ${r.match}%</p>
+                                </div>
+                            </div>
+                            <button class="text-sm border border-gray-300 px-3 py-1 rounded-full hover:bg-gray-50 text-gray-600">查看</button>
+                        </div>
+                        <div class="mt-4 flex flex-wrap gap-2 text-xs">
+                            ${r.has.map(i => `<span class="bg-green-100 text-green-700 px-2 py-1 rounded">有: ${i}</span>`).join('')}
+                            ${r.lack.map(i => `<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded">缺: ${i}</span>`).join('')}
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            });
+
+            document.getElementById('btnSpinDish').addEventListener('click', () => {
+                const display = document.getElementById('dishDisplay');
+                const dishes = ['咖哩飯', '義大利麵', '火鍋', '水餃', '牛排', '沙拉', '拉麵', '滷肉飯', '鹹酥雞'];
+                let count = 0;
+                display.classList.remove('text-gray-400');
+                display.classList.add('text-blue-600', 'font-bold');
+                const interval = setInterval(() => {
+                    display.innerText = dishes[Math.floor(Math.random() * dishes.length)];
+                    count++;
+                    if(count > 15) {
+                        clearInterval(interval);
+                        display.innerHTML = `<span class="text-rose-600 drop-shadow-md">✨ ${display.innerText} ✨</span>`;
+                    }
+                }, 80);
+            });
+            
+             document.getElementById('btnCalculateWaste').addEventListener('click', () => {
+                const items = document.getElementById('wasteItems').value;
+                const price = document.getElementById('wastePrice').value;
+                if(items && price) {
+                    const total = items * price * 52;
+                    document.getElementById('wasteResult').classList.remove('hidden');
+                    document.getElementById('wasteResult').innerHTML = `一年浪費約 NT$ ${total.toLocaleString()}`;
+                }
+            });
+        });
+
+        // 庫存與圖表
+        let ingredients = [
+            {id:1, name:'雞胸肉', type:'肉類', expiry: new Date(Date.now()+86400000*2).toISOString().split('T')[0]},
+            {id:2, name:'高麗菜', type:'蔬菜', expiry: new Date(Date.now()+86400000*5).toISOString().split('T')[0]},
+            {id:3, name:'牛奶', type:'奶製品', expiry: new Date(Date.now()-86400000).toISOString().split('T')[0]}
+        ];
+
+        function renderUI() {
+            const list = document.getElementById('ingredient-list');
+            
+            // 🔥 更新：列表渲染邏輯 (新增刪除按鈕)
+            if(ingredients.length === 0) {
+                list.innerHTML = '<p class="text-center text-gray-400 py-10">目前沒有食材，快去新增吧！</p>';
+            } else {
+                list.innerHTML = ingredients.map(i => {
+                    const days = Math.ceil((new Date(i.expiry) - new Date())/(1000*3600*24));
+                    // 根據天數決定樣式
+                    let colorClass = 'bg-sky-50 text-sky-800 border-sky-100'; // 正常
+                    let statusText = `剩 ${days} 天`;
+                    if (days < 0) {
+                        colorClass = 'bg-gray-100 text-gray-500 border-gray-200'; // 過期
+                        statusText = '已過期';
+                    } else if (days <= 2) {
+                        colorClass = 'bg-rose-50 text-rose-700 border-rose-200'; // 即期
+                        statusText = `剩 ${days} 天 🔥`;
+                    }
+
+                    return `
+                    <div class="flex justify-between items-center p-4 rounded-xl border mb-2 ${colorClass} transition hover:shadow-sm">
+                        <div>
+                            <div class="font-bold text-lg flex items-center gap-2">
+                                ${i.name} 
+                                <span class="text-xs font-normal opacity-70 px-2 py-0.5 bg-white/50 rounded-full border border-current">${i.type}</span>
+                            </div>
+                            <div class="text-sm font-bold opacity-90 mt-1">${statusText} (${i.expiry})</div>
+                        </div>
+                        <button onclick="removeIngredient('${i.id}')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/10 transition text-current" title="刪除">
+                            ✕
+                        </button>
+                    </div>`;
+                }).join('');
+            }
+            
+            document.getElementById('stat-total-items').innerText = ingredients.length;
+            document.getElementById('stat-warning-items').innerText = ingredients.filter(i => (new Date(i.expiry)-new Date())/(1000*3600*24) <= 3).length;
+            document.getElementById('stat-total-value').innerText = '$' + (ingredients.length * 50);
+        }
+
+        // 🔥 更新：刪除單項食材函式
+        window.removeIngredient = function(id) {
+            if(confirm('確定要移除這項食材嗎？')) {
+                ingredients = ingredients.filter(i => i.id != id); // 注意：id 是字串或數字，用 != 比較保險
+                renderUI();
+            }
+        };
+
+        // 🔥 更新：清除所有過期食材函式
+        document.getElementById('delete-expired-btn').addEventListener('click', () => {
+            const initialCount = ingredients.length;
+            ingredients = ingredients.filter(i => {
+                const days = Math.ceil((new Date(i.expiry) - new Date())/(1000*3600*24));
+                return days >= 0; // 只保留未過期的
+            });
+            
+            const removedCount = initialCount - ingredients.length;
+            if(removedCount > 0) {
+                renderUI();
+                alert(`已清除 ${removedCount} 項過期食材！`);
+            } else {
+                alert('目前沒有過期食材喔！');
+            }
+        });
+
+        let chart1, chart2;
+        function updateChartGlobal() {
+            if(chart1) chart1.destroy();
+            if(chart2) chart2.destroy();
+            chart1 = new Chart(document.getElementById('expirationChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['新鮮', '即期', '過期'],
+                    datasets: [{ data: [1, 1, 1], backgroundColor: ['#34d399', '#fbbf24', '#f87171'] }]
+                }
+            });
+            chart2 = new Chart(document.getElementById('categoryChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['蔬菜', '肉類', '奶製品'],
+                    datasets: [{ label:'數量', data: [1, 1, 1], backgroundColor: '#38bdf8' }]
+                }
+            });
+        }
+
+        const stories = {
+            'carrot': "我是小紅蘿蔔，因為主人忘記我，我在冰箱角落待了好久...記得要把新買的菜放後面，舊的放前面喔！（先進先出）",
+            'robot': "我是冰箱守護神阿冷。主人把冰箱塞太滿了，冷氣吹不過去，我都快熱暈了！請保持七分滿就好喔！",
+            'earth': "每浪費一份食物，地球媽媽就會掉一滴眼淚。讓我們一起把飯吃光光，拯救地球吧！"
+        };
+        function openStory(id) {
+            document.getElementById('story-body').innerText = stories[id];
+            document.getElementById('story-modal').classList.remove('hidden');
+            document.getElementById('story-modal').classList.add('flex');
+        }
+        function closeStory() {
+            document.getElementById('story-modal').classList.add('hidden');
+            document.getElementById('story-modal').classList.remove('flex');
+        }
+    </script>
+</body>
+</html>
